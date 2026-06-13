@@ -4,9 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Planet Fitness Trivia Challenge</title>
+    <!-- Secure CDN delivery over HTTPS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body { -webkit-tap-highlight-color: transparent; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(4px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in { animation: fadeIn 0.25s ease-out forwards; }
     </style>
 </head>
 <body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col justify-between p-6 font-sans select-none">
@@ -20,7 +26,7 @@
     <!-- Main Dynamic Container -->
     <main class="flex-grow flex flex-col justify-center max-w-xl w-full mx-auto my-4">
         <div id="quiz-card" class="bg-slate-800 border border-slate-700/50 rounded-2xl p-6 shadow-xl transition-all duration-300">
-            <!-- Dynamic Content Injected Here -->
+            <!-- Dynamic Content Injected Securely via Script -->
         </div>
     </main>
 
@@ -30,129 +36,174 @@
     </footer>
 
     <script>
-        // Master Question Pool (5 Planet Fitness & General Fitness Questions)
-        const questionPool = [
-            {
-                question: "If you have a PF Black Card, what is one benefit is truely unlimited?",
-                options: ["Unlimited Tanning", "Free Drinks", "Access to one location", "Access 24/7"],
-                correct: "Unlmited Tanning"
-            },
-            {
-                question: "What is the name of the premium membership tier that offers additional perks like guest access and use of any club?",
-                options: ["Classic Membership", "Gold Status", "Elite", "PF Black Card"],
-                correct: "PF Black Card"
-            },
-            {
-                question: "What feature on the free Planet Fitness mobile app allows local members to check how busy the Langley club is before driving over?",
-                options: ["The Traffic Tracker", "The Crowd Meter", "The Gym Radar", "The Capacity Counter"],
-                correct: "The Crowd Meter"
-            },
-            {
-                question: "What is the name of Planet Fitness's famous philosophy that promotes a comfortable, welcoming environment?",
-                options: ["No Pain No Gain Zone", "Hardcore Elite Space", "Judgement Free Zone®", "Peak Performance Club"],
-                correct: "Judgement Free Zone®"
-            },
-            {
-                question: "If you are a Planet Fitness member how much do classes costs?",
-                options: ["$50", "$0 Free for both membership options", "$100", "$10"],
-                correct: "$0 Free for both membership options"
-            },
-            {
-                question: "Which iconic device is located on the wall in Planet Fitness clubs to deter loud grunting, weight slamming, or disruptive behavior?",
-                options: ["The Siren Alert", "The Lunk Alarm®", "The Focus Bell", "The Gym Whistle"],
-                correct: "The Lunk Alarm®"
-            },
-            {
-                question: "What street is the local Langley Planet Fitness club located on?",
-                options: ["Fraser Hwy", "204th Street", "64th Avenue", "Langley Bypass"],
-                correct: "204th Street"
-            }
-        ];
+        // IIFE wrapper blocks runtime variable interception via global window object
+        (function () {
+            "use strict";
 
-        let currentQuestion = null;
-        let hasAnswered = false;
-
-        function shuffleArray(array) {
-            for (let i = array.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [array[i], array[j]] = [array[j], array[i]];
-            }
-            return array;
-        }
-
-        function initQuiz() {
-            hasAnswered = false;
-            // Pick a completely random question from the pool
-            const randomIndex = Math.floor(Math.random() * questionPool.length);
-            currentQuestion = { ...questionPool[randomIndex] };
-            
-            // Shuffle the options so the correct answer isn't always in the same spot
-            currentQuestion.options = shuffleArray([...currentQuestion.options]);
-
-            renderQuestion();
-        }
-
-        function renderQuestion() {
-            const container = document.getElementById('quiz-card');
-            container.innerHTML = `
-                <div class="space-y-6">
-                    <div class="text-xs font-bold text-purple-400 uppercase tracking-wider">Random Trivia Challenge</div>
-                    <h2 class="text-xl font-bold leading-snug text-slate-100">${currentQuestion.question}</h2>
-                    <div class="space-y-3 pt-2" id="options-group">
-                        ${currentQuestion.options.map((option, index) => `
-                            <button onclick="handleSelection('${option.replace(/'/g, "\\'")}', this)" 
-                                    class="w-full text-left p-4 rounded-xl border border-slate-700 bg-slate-800/50 hover:bg-slate-700/50 active:scale-[0.99] font-medium transition-all flex items-center justify-between group">
-                                <span>${option}</span>
-                                <span class="w-5 h-5 rounded-full border border-slate-600 flex items-center justify-center text-xs font-bold group-hover:border-purple-400"></span>
-                            </button>
-                        `).join('')}
-                    </div>
-                </div>
-            `;
-        }
-
-        function handleSelection(selectedOption, buttonElement) {
-            if (hasAnswered) return;
-            hasAnswered = true;
-
-            const isCorrect = selectedOption === currentQuestion.correct;
-            const optionsGroup = document.getElementById('options-group');
-            const buttons = optionsGroup.getElementsByTagName('button');
-
-            // Apply styling updates instantly
-            for (let btn of buttons) {
-                btn.disabled = true;
-                const btnText = btn.innerText.trim();
-                
-                if (btnText === currentQuestion.correct) {
-                    btn.className = "w-full text-left p-4 rounded-xl border-2 border-emerald-500 bg-emerald-950/40 text-emerald-300 font-semibold transition-all flex items-center justify-between";
-                    btn.innerHTML += `<span class="text-emerald-400 font-bold">✓ Correct</span>`;
-                } else if (btnText === selectedOption && !isCorrect) {
-                    btn.className = "w-full text-left p-4 rounded-xl border-2 border-rose-500 bg-rose-950/40 text-rose-300 font-medium transition-all flex items-center justify-between";
-                    btn.innerHTML += `<span class="text-rose-400 font-bold">✗ Incorrect</span>`;
-                } else {
-                    btn.className = "w-full text-left p-4 rounded-xl border border-slate-800 bg-slate-900/30 text-slate-500 transition-all flex items-center justify-between";
+            const questionPool = [
+                {
+                    question: "If you have a PF Black Card, what is one benefit that is truly unlimited?",
+                    options: ["Unlimited Tanning", "Free Drinks", "Access to one location", "Access 24/7"],
+                    correct: "Unlimited Tanning"
+                },
+                {
+                    question: "What is the name of the premium membership tier that offers additional perks like guest access and use of any club?",
+                    options: ["Classic Membership", "Gold Status", "Elite", "PF Black Card"],
+                    correct: "PF Black Card"
+                },
+                {
+                    question: "What feature on the free Planet Fitness mobile app allows local members to check how busy the Langley club is before driving over?",
+                    options: ["The Traffic Tracker", "The Crowd Meter", "The Gym Radar", "The Capacity Counter"],
+                    correct: "The Crowd Meter"
+                },
+                {
+                    question: "What is the name of Planet Fitness's famous philosophy that promotes a comfortable, welcoming environment?",
+                    options: ["No Pain No Gain Zone", "Hardcore Elite Space", "Judgement Free Zone®", "Peak Performance Club"],
+                    correct: "Judgement Free Zone®"
+                },
+                {
+                    question: "If you are a Planet Fitness member, how much do fitness classes cost?",
+                    options: ["$50", "$0 Free for both membership options", "$100", "$10"],
+                    correct: "$0 Free for both membership options"
+                },
+                {
+                    question: "Which iconic device is located on the wall in Planet Fitness clubs to deter loud grunting, weight slamming, or disruptive behavior?",
+                    options: ["The Siren Alert", "The Lunk Alarm®", "The Focus Bell", "The Gym Whistle"],
+                    correct: "The Lunk Alarm®"
+                },
+                {
+                    question: "What street is the local Langley Planet Fitness club located on?",
+                    options: ["Fraser Hwy", "204th Street", "64th Avenue", "Langley Bypass"],
+                    correct: "204th Street"
                 }
+            ];
+
+            let currentQuestion = null;
+            let hasAnswered = false;
+
+            function shuffleArray(array) {
+                for (let i = array.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [array[i], array[j]] = [array[j], array[i]];
+                }
+                return array;
             }
 
-            // Display feedback block and reset mechanic below the question
-            const container = document.getElementById('quiz-card');
-            const resultBlock = document.createElement('div');
-            resultBlock.className = "mt-6 pt-6 border-t border-slate-700/60 text-center animate-fade-in";
-            
-            resultBlock.innerHTML = `
-                <div class="text-lg font-bold ${isCorrect ? 'text-emerald-400' : 'text-rose-400'}">
-                    ${isCorrect ? '🎉 Clean Win! Next person\'s turn.' : '❌ Out of Luck! Better luck next time.'}
-                </div>
-                <button onclick="initQuiz()" class="mt-4 w-full bg-purple-600 hover:bg-purple-500 text-white font-bold py-4 px-6 rounded-xl transition-all shadow-lg active:scale-95 text-md uppercase tracking-wider">
-                    Next Player
-                </button>
-            `;
-            container.appendChild(resultBlock);
-        }
+            function initQuiz() {
+                hasAnswered = false;
+                const randomIndex = Math.floor(Math.random() * questionPool.length);
+                currentQuestion = { ...questionPool[randomIndex] };
+                currentQuestion.options = shuffleArray([...currentQuestion.options]);
+                renderQuestion();
+            }
 
-        // Initialize on page load
-        window.onload = initQuiz;
+            function escapeHtml(str) {
+                return str.replace(/&/g, "&amp;")
+                          .replace(/</g, "&lt;")
+                          .replace(/>/g, "&gt;")
+                          .replace(/"/g, "&quot;")
+                          .replace(/'/g, "&#039;");
+            }
+
+            function renderQuestion() {
+                const container = document.getElementById('quiz-card');
+                
+                // Clear out previous states safely
+                container.innerHTML = "";
+
+                const wrapper = document.createElement('div');
+                wrapper.className = "space-y-6";
+
+                const categoryHeader = document.createElement('div');
+                categoryHeader.className = "text-xs font-bold text-purple-400 uppercase tracking-wider";
+                categoryHeader.textContent = "Random Trivia Challenge";
+                wrapper.appendChild(categoryHeader);
+
+                const questionHeading = document.createElement('h2');
+                questionHeading.className = "text-xl font-bold leading-snug text-slate-100";
+                questionHeading.textContent = currentQuestion.question;
+                wrapper.appendChild(questionHeading);
+
+                const optionsGroup = document.createElement('div');
+                optionsGroup.className = "space-y-3 pt-2";
+                optionsGroup.id = "options-group";
+
+                currentQuestion.options.forEach(option => {
+                    const btn = document.createElement('button');
+                    btn.setAttribute('data-option', option);
+                    btn.className = "w-full text-left p-4 rounded-xl border border-slate-700 bg-slate-800/50 hover:bg-slate-700/50 active:scale-[0.99] font-medium transition-all flex items-center justify-between group";
+                    
+                    const textLabel = document.createElement('span');
+                    textLabel.textContent = option;
+                    btn.appendChild(textLabel);
+
+                    const indicator = document.createElement('span');
+                    indicator.className = "w-5 h-5 rounded-full border border-slate-600 flex items-center justify-center text-xs font-bold group-hover:border-purple-400 direct-indicator";
+                    btn.appendChild(indicator);
+
+                    btn.addEventListener('click', function() {
+                        handleSelection(this);
+                    });
+
+                    optionsGroup.appendChild(btn);
+                });
+
+                wrapper.appendChild(optionsGroup);
+                container.appendChild(wrapper);
+            }
+
+            function handleSelection(buttonElement) {
+                if (hasAnswered) return;
+                hasAnswered = true;
+
+                const selectedOption = buttonElement.getAttribute('data-option');
+                const isCorrect = selectedOption === currentQuestion.correct;
+                const optionsGroup = document.getElementById('options-group');
+                const buttons = optionsGroup.getElementsByTagName('button');
+
+                for (let btn of buttons) {
+                    btn.disabled = true;
+                    const btnValue = btn.getAttribute('data-option');
+                    const indicator = btn.querySelector('.direct-indicator');
+                    if (indicator) indicator.className = "hidden";
+                    
+                    if (btnValue === currentQuestion.correct) {
+                        btn.className = "w-full text-left p-4 rounded-xl border-2 border-emerald-500 bg-emerald-950/40 text-emerald-300 font-semibold transition-all flex items-center justify-between";
+                        const feedback = document.createElement('span');
+                        feedback.className = "text-emerald-400 font-bold text-sm tracking-wide bg-emerald-500/10 px-2 py-0.5 rounded-md";
+                        feedback.textContent = "✓ Correct";
+                        btn.appendChild(feedback);
+                    } else if (btnValue === selectedOption && !isCorrect) {
+                        btn.className = "w-full text-left p-4 rounded-xl border-2 border-rose-500 bg-rose-950/40 text-rose-300 font-medium transition-all flex items-center justify-between";
+                        const feedback = document.createElement('span');
+                        feedback.className = "text-rose-400 font-bold text-sm tracking-wide bg-rose-500/10 px-2 py-0.5 rounded-md";
+                        feedback.textContent = "✗ Incorrect";
+                        btn.appendChild(feedback);
+                    } else {
+                        btn.className = "w-full text-left p-4 rounded-xl border border-slate-800 bg-slate-900/30 text-slate-500 transition-all flex items-center justify-between";
+                    }
+                }
+
+                const container = document.getElementById('quiz-card');
+                const resultBlock = document.createElement('div');
+                resultBlock.className = "mt-6 pt-6 border-t border-slate-700/60 text-center animate-fade-in";
+                
+                const statusDiv = document.createElement('div');
+                statusDiv.className = `text-lg font-bold ${isCorrect ? 'text-emerald-400' : 'text-rose-400'}`;
+                statusDiv.textContent = isCorrect ? "🎉 Clean Win! Next person's turn." : "❌ Out of Luck! Better luck next time.";
+                resultBlock.appendChild(statusDiv);
+
+                const nextBtn = document.createElement('button');
+                nextBtn.className = "mt-4 w-full bg-purple-600 hover:bg-purple-500 text-white font-bold py-4 px-6 rounded-xl transition-all shadow-lg active:scale-95 text-md uppercase tracking-wider";
+                nextBtn.textContent = "Next Player";
+                nextBtn.addEventListener('click', initQuiz);
+                resultBlock.appendChild(nextBtn);
+
+                container.appendChild(resultBlock);
+            }
+
+            window.addEventListener('DOMContentLoaded', initQuiz);
+        })();
     </script>
 </body>
 </html>
